@@ -1,0 +1,11 @@
+main: com.rayzr522.minecraftmarkdown.MinecraftMarkdown
+name: MinecraftMarkdown
+version: 1.0
+description: A bukkit plugin allowing Markdown-like formatting
+author: [Rayzr]
+#commands:
+#  minecraftmarkdown:
+#    description: MinecraftMarkdown main command
+#    aliases: [alias1,alias2]
+#    usage: "/minecraftmarkdown [command]"
+#    permission: MinecraftMarkdown.main
