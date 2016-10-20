@@ -1,0 +1,20 @@
+# Should MinecraftMarkdown convert ampersand color/formatting codes?
+convert-formatting-codes: false
+
+formatters:
+    italic:
+        pattern: "_"
+        start: "&o"
+    bold:
+        pattern: "*"
+        start: "&l"
+    strikethrough:
+        pattern: "~"
+        start: "&l"
+    code:
+        pattern: "`"
+        start: "&7&o"
+    # alert:
+    #     pattern: "!!!"
+    #     start: "&4&l! &c"
+    #     end: " &4&l!"

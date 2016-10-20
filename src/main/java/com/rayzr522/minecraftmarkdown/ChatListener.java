@@ -20,7 +20,7 @@ public class ChatListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onChat(AsyncPlayerChatEvent e) {
         String message = e.getMessage();
         for (Formatter formatter : plugin.getFormatters()) {

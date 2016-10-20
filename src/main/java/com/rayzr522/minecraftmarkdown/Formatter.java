@@ -3,10 +3,12 @@
  */
 package com.rayzr522.minecraftmarkdown;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * @author Rayzr
@@ -14,24 +16,52 @@ import org.bukkit.ChatColor;
  */
 public class Formatter {
 
-    private Pattern pattern;
-    private String  colorCode;
+    public static final String   INVALID_STRING   = "ERR_INVALID";
+
+    private static final Pattern FORMATTING_CODES = Pattern.compile(ChatColor.COLOR_CHAR + "([klmnor])");
+    private static final Pattern COLOR_CODES      = Pattern.compile(ChatColor.COLOR_CHAR + "([0-9a-f])");
+
+    private static final String  BASE_PATTERN     = "({0}([^{0}]+){0})+";
+
+    private Pattern              pattern;
+    private String               start;
+    private String               end;
 
     /**
      * @param character
-     * @param colorCode
+     * @param start
+     * @param end
      */
-    public Formatter(String character, String colorCode) {
-        this.colorCode = color(colorCode);
-        pattern = Pattern.compile(String.format("(\\%s([^\\%s]+)\\%s)+", character, character, character));
+    public Formatter(String pattern, String start, String end) {
+        Objects.requireNonNull(pattern, "`pattern` for formatter cannot be null!");
+        Objects.requireNonNull(start, "`start` for formatter cannot be null!");
+
+        this.start = color(start);
+        this.end = color(end);
+        this.pattern = Pattern.compile(BASE_PATTERN.replace("{0}", Pattern.quote(pattern)));
+    }
+
+    /**
+     * @param character
+     * @param start
+     */
+    public Formatter(String character, String start) {
+        this(character, start, "");
+    }
+
+    /**
+     * @param configurationSection
+     */
+    public Formatter(ConfigurationSection cs) {
+        this(cs.getString("pattern", null), cs.getString("start", null), cs.getString("end", ""));
     }
 
     public String apply(String input) {
 
         Matcher matcher = pattern.matcher(input);
         while (matcher.find()) {
-            String end = findLastFormatting(input, matcher.start());
-            input = input.replace(matcher.group(1), colorCode + matcher.group(2) + end);
+            String reset = findLastFormatting(input, matcher.start());
+            input = input.replace(matcher.group(1), start + matcher.group(2) + end + reset);
         }
 
         return input;
@@ -48,7 +78,7 @@ public class Formatter {
 
         str = str.substring(0, end);
 
-        Matcher matcher = Pattern.compile(ChatColor.COLOR_CHAR + "([0-9a-f])").matcher(str);
+        Matcher matcher = COLOR_CODES.matcher(str);
         String color = ChatColor.RESET.toString();
         int pos = -1;
         while (matcher.find()) {
@@ -57,7 +87,7 @@ public class Formatter {
         }
 
         String format = "";
-        matcher = Pattern.compile(ChatColor.COLOR_CHAR + "([klmnor])").matcher(str);
+        matcher = FORMATTING_CODES.matcher(str);
         while (matcher.find()) {
             if (matcher.start() < pos) {
                 continue;
